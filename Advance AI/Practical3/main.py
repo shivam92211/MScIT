@@ -1,3 +1,5 @@
+# Use Colab
+
 from transformers import pipeline
 
 # Step 1: Load a Pre-trained Transformer Model
