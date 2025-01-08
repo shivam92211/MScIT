@@ -1,0 +1,35 @@
+The way I am going to review this ML prac is different in comparison with AAI prac. When I was performing AAI practicals I was doing in considering alot of things like aim, code length, and only wrote coding steps for things that was mandatory. And I did for all almost all practicals. And just for for 10 practicals it took a lot of time . But since for this practical we don't have time, I am going to skim and just check things from a high-level and won't deep dive into it. I am also going to skip practicals and won'tprepare for all of them. So you guys have to know that you guys can write whatever code you want as long as output matches with the aim.
+Here is the review:
+
+p1a is different than what I gave 
+p1b is getting an error which is why it was not displaying 1 more graph. I have resolved it and I will share the code with you.
+p3b could be shortned - As per my knowledge it has multiple unecessary/ not needed steps which is not asked in the aim/question. Still I am only 80% sure on this
+p3c - Probably this is different than the one I did at clg. I think this is done by Shivam. Practical looks different but works
+p4b - Dataset file isn't present. Can't run practical!
+p4e - This has 2 graphs and console as outputs. 1 graph is missing
+p5b - I am getting multiple errors in this. Tried to resolve multiple times, still I am getting error. For now let's skip this prac.
+p6a - There are 3 graphs for this prac as output. Only 1 is added in the manual.
+p6b - Same issue like p6a. There are 3 graphs for this prac as output. Only 1 is added in the manual.
+p6a and p8 are exactly the same code and output. I saw the aim/question and its quite similar to each other. I asked ChatGPT whether the code does what 6a and 8 asks to do in seperate chats and ChatGPT says the code does satisy/ answers both the questions( If you want I can send the chat link from ChatGPT).
+p9- Ignore the p9 folder in this zip. Everything is good for this prac
+p10 - I don't understand this practical and I am getting error. But output seems good in the manual
+
+Action items: These are the things you need to do
+1. Go to clg if feasible and from the MSc IT Part2 Lab take the python files and word file(and data set file if present) for the practicals 1 to 4 and share it with me
+2. p1b - Run the updated code and take screenshot of the outputs (Wait for all the graphs to display. There are many graphs). I think we can remove a certain part of code to not display all the graphs as it isn't explicitly mentioned in the aim/ question of this practical to do so. But that is future thing.
+
+3. p4b - Give me dataset file
+4. p4e - Run this prac and add the remaining graph. I will share a zip file with you of all pracs.
+5. p5b - tell vaibhav sir that we going to skip this prac
+6. p6a - Add the remaining 2 outputs by running this prac
+7. p6b - Add the remaining 2 outputs by running this prac
+8. If you want, inform vaibhav sir that p6a and p8 are same code and output wise.
+
+
+As we read manual and perform practical we will still discover certain problems adn issues and that's fine. For now we have to focus on the above things. Delegeta/Assign some tasks to others if needed.
+
+Remember to make changes in the manual accordingly!
+
+
+1. Code copy paste
+2. review the steps

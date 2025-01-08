@@ -1,0 +1,1 @@
+Set up a generator network to produce samples and a discriminator network to distinguish between real and generated data. (Use a simple small dataset)
