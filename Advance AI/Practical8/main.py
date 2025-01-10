@@ -1,78 +1,37 @@
-# Use Colab with GPU
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 
-import tensorflow as tf
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.utils import to_categorical
+# 1. Prepare and normalize data
+data = pd.DataFrame(np.sin(np.linspace(0, 100, 1000)), columns=['value'])
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_data = scaler.fit_transform(data)
 
-# Parameters
-IMG_SIZE = 224  # Resize MNIST images to 224x224
-BATCH_SIZE = 32
-EPOCHS = 5
-LEARNING_RATE = 0.0001
+# 2. Create dataset for LSTM
+X, y = [], []
+for i in range(len(scaled_data) - 10):
+    X.append(scaled_data[i:i+10, 0])
+    y.append(scaled_data[i+10, 0])
+X, y = np.array(X), np.array(y)
+X = X.reshape(X.shape[0], X.shape[1], 1)
 
-# Load MNIST dataset
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+# 3. Split data into train and test
+train_size = int(len(X) * 0.8)
+X_train, X_test, y_train, y_test = X[:train_size], X[train_size:], y[:train_size], y[train_size:]
 
-# Define data preprocessing function
-def preprocess(image, label):
-    # Expand dims for grayscale, resize, normalize, and convert to RGB
-    image = tf.image.resize(tf.expand_dims(image, axis=-1), (IMG_SIZE, IMG_SIZE)) / 255.0
-    image = tf.image.grayscale_to_rgb(image)
-    label = tf.one_hot(label, depth=10)  # One-hot encode labels
-    return image, label
+# 4. Build and train model
+model = Sequential([LSTM(50, input_shape=(X_train.shape[1], 1)), Dense(1)])
+model.compile(optimizer='adam', loss='mse')
+model.fit(X_train, y_train, epochs=20, batch_size=32, verbose=1)  # Increased epochs to 20
 
-# Create TensorFlow datasets
-train_dataset = (
-    tf.data.Dataset.from_tensor_slices((x_train, y_train))
-    .map(preprocess)
-    .batch(BATCH_SIZE)
-    .prefetch(tf.data.AUTOTUNE)
-)
-
-test_dataset = (
-    tf.data.Dataset.from_tensor_slices((x_test, y_test))
-    .map(preprocess)
-    .batch(BATCH_SIZE)
-    .prefetch(tf.data.AUTOTUNE)
-)
-
-# Load the pre-trained MobileNetV2 model
-base_model = MobileNetV2(weights="imagenet", include_top=False, input_shape=(IMG_SIZE, IMG_SIZE, 3))
-
-# Freeze the base model
-base_model.trainable = False
-
-# Add custom layers on top
-x = base_model.output
-x = GlobalAveragePooling2D()(x)
-x = Dropout(0.3)(x)  # Dropout for regularization
-x = Dense(128, activation="relu")(x)  # Add a dense layer
-predictions = Dense(10, activation="softmax")(x)  # Output layer for 10 classes
-
-# Create the full model
-model = Model(inputs=base_model.input, outputs=predictions)
-
-# Compile the model
-model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
-              loss="categorical_crossentropy",
-              metrics=["accuracy"])
-
-# Train the model
-history = model.fit(
-    train_dataset,
-    validation_data=test_dataset,
-    epochs=EPOCHS
-)
-
-# Save the model
-model.save("mnist_transfer_learning_model.h5")
-
-# Evaluate the model on the test dataset
-evaluation = model.evaluate(test_dataset, verbose=1)
-
-# Print the evaluation metrics
-print(f"Test Loss: {evaluation[0]:.4f}")
-print(f"Test Accuracy: {evaluation[1]:.4f}")
+# 5. Predict and plot
+predictions = scaler.inverse_transform(model.predict(X_test))
+y_test = scaler.inverse_transform(y_test.reshape(-1, 1))  # Reshape y_test to 2D for inverse transform
+plt.figure(figsize=(10, 6))
+plt.plot(y_test, label='True')
+plt.plot(predictions, label='Predicted')
+plt.legend()
+plt.show()

@@ -1,84 +1,78 @@
-import numpy as np
-import random
+# Use Colab with GPU
 
-# Define the environment
-grid_size = 5
-goal_state = (4, 4)
-obstacle_states = [(2, 2), (3, 3)]
-actions = ['up', 'down', 'left', 'right']
-action_to_delta = {
-    'up': (-1, 0),
-    'down': (1, 0),
-    'left': (0, -1),
-    'right': (0, 1)
-}
+import tensorflow as tf
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import to_categorical
 
-# Initialize Q-table
-q_table = np.zeros((grid_size, grid_size, len(actions)))
-alpha = 0.1  # Learning rate
-gamma = 0.9  # Discount factor
-epsilon = 1.0  # Exploration rate
-epsilon_decay = 0.99
-min_epsilon = 0.1
-episodes = 500
+# Parameters
+IMG_SIZE = 224  # Resize MNIST images to 224x224
+BATCH_SIZE = 32
+EPOCHS = 5
+LEARNING_RATE = 0.0001
 
-# Reward function
-def get_reward(state):
-    if state == goal_state:
-        return 10
-    elif state in obstacle_states:
-        return -10
-    return -1
+# Load MNIST dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
-# Check if the new state is valid
-def is_valid_state(state):
-    return 0 <= state[0] < grid_size and 0 <= state[1] < grid_size and state not in obstacle_states
+# Define data preprocessing function
+def preprocess(image, label):
+    # Expand dims for grayscale, resize, normalize, and convert to RGB
+    image = tf.image.resize(tf.expand_dims(image, axis=-1), (IMG_SIZE, IMG_SIZE)) / 255.0
+    image = tf.image.grayscale_to_rgb(image)
+    label = tf.one_hot(label, depth=10)  # One-hot encode labels
+    return image, label
 
-# Main Q-learning loop
-for episode in range(episodes):
-    state = (0, 0)  # Start state
-    total_reward = 0
-    while state != goal_state:
-        # Choose an action using epsilon-greedy
-        if random.uniform(0, 1) < epsilon:
-            action = random.choice(actions)  # Explore
-        else:
-            action = actions[np.argmax(q_table[state[0], state[1]])]  # Exploit
+# Create TensorFlow datasets
+train_dataset = (
+    tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    .map(preprocess)
+    .batch(BATCH_SIZE)
+    .prefetch(tf.data.AUTOTUNE)
+)
 
-        # Perform the action
-        delta = action_to_delta[action]
-        next_state = (state[0] + delta[0], state[1] + delta[1])
+test_dataset = (
+    tf.data.Dataset.from_tensor_slices((x_test, y_test))
+    .map(preprocess)
+    .batch(BATCH_SIZE)
+    .prefetch(tf.data.AUTOTUNE)
+)
 
-        # Check validity of next state
-        if not is_valid_state(next_state):
-            next_state = state  # Stay in the same state if invalid
+# Load the pre-trained MobileNetV2 model
+base_model = MobileNetV2(weights="imagenet", include_top=False, input_shape=(IMG_SIZE, IMG_SIZE, 3))
 
-        # Get reward and update Q-table
-        reward = get_reward(next_state)
-        total_reward += reward
-        best_next_action = np.max(q_table[next_state[0], next_state[1]])
-        q_table[state[0], state[1], actions.index(action)] += alpha * (
-            reward + gamma * best_next_action - q_table[state[0], state[1], actions.index(action)]
-        )
+# Freeze the base model
+base_model.trainable = False
 
-        # Update state
-        state = next_state
+# Add custom layers on top
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+x = Dropout(0.3)(x)  # Dropout for regularization
+x = Dense(128, activation="relu")(x)  # Add a dense layer
+predictions = Dense(10, activation="softmax")(x)  # Output layer for 10 classes
 
-    # Decay epsilon
-    epsilon = max(min_epsilon, epsilon * epsilon_decay)
-    print(f"Episode {episode + 1}: Total Reward = {total_reward}")
+# Create the full model
+model = Model(inputs=base_model.input, outputs=predictions)
 
-# Display learned policy
-policy = np.full((grid_size, grid_size), ' ')
-for i in range(grid_size):
-    for j in range(grid_size):
-        if (i, j) == goal_state:
-            policy[i, j] = 'G'  # Goal
-        elif (i, j) in obstacle_states:
-            policy[i, j] = 'X'  # Obstacle
-        else:
-            best_action = np.argmax(q_table[i, j])
-            policy[i, j] = actions[best_action][0].upper()
+# Compile the model
+model.compile(optimizer=Adam(learning_rate=LEARNING_RATE),
+              loss="categorical_crossentropy",
+              metrics=["accuracy"])
 
-print("Learned Policy:")
-print(policy)
+# Train the model
+history = model.fit(
+    train_dataset,
+    validation_data=test_dataset,
+    epochs=EPOCHS
+)
+
+# Save the model
+model.save("mnist_transfer_learning_model.h5")
+
+# Evaluate the model on the test dataset
+evaluation = model.evaluate(test_dataset, verbose=1)
+
+# Print the evaluation metrics
+print(f"Test Loss: {evaluation[0]:.4f}")
+print(f"Test Accuracy: {evaluation[1]:.4f}")

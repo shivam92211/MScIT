@@ -1,73 +1,131 @@
-# README: Bayesian Optimization for Random Forest Hyperparameter Tuning
+# Flask ML App: Machine Learning Model Deployment with Docker
 
-This project demonstrates the use of Bayesian Optimization to tune hyperparameters of a Random Forest Classifier using the `BayesSearchCV` module from the `scikit-optimize` library. The code uses the Iris dataset, a standard dataset for classification tasks, and performs optimization to achieve the best cross-validation score.
+This project demonstrates how to train a simple machine learning model, save it, create a Flask API to serve the model, and Dockerize the application for deployment.
 
 ---
 
 ## Features
 
-- **Dataset**: Iris dataset is used as a benchmark dataset for multiclass classification.
-- **Model**: Random Forest Classifier from `sklearn.ensemble`.
-- **Hyperparameter Tuning**: Bayesian Optimization is applied to find the optimal hyperparameters.
-- **Search Space**:
-  - `n_estimators`: Number of trees in the forest.
-  - `max_depth`: Maximum depth of each tree.
-  - `min_samples_split`: Minimum fraction of samples required to split an internal node.
-  - `min_samples_leaf`: Minimum number of samples required to be at a leaf node.
-  - `max_features`: Fraction of features considered for splitting.
-- **Cross-Validation**: 5-fold cross-validation is used to evaluate the model performance for each set of hyperparameters.
+- **Machine Learning**: Trained a Random Forest Classifier using the Iris dataset.
+- **Model Persistence**: Saved the trained model using Python's `pickle` module.
+- **Flask API**: Created an API endpoint to make predictions using the saved model.
+- **Dockerization**: Packaged the application into a Docker container for easy deployment.
 
 ---
 
-## Prerequisites
+## Requirements
 
-- Python 3.8 or above
-- Required libraries:
-  - `numpy`
-  - `scikit-learn`
-  - `scikit-optimize`
+- Python 3.9 or later
+- Docker (for containerization)
+- Required Python libraries:
+  - Flask
+  - scikit-learn
 
-You can install the dependencies using:
+Install Python dependencies using:
 
 ```bash
-pip install numpy scikit-learn scikit-optimize
+pip install flask scikit-learn
 ```
 
 ---
 
-## How to Use
+## Setup and Usage
 
-1. Clone the repository or copy the script to your working directory.
-2. Run the script in an environment with GPU support (optional but recommended for faster execution).
-3. The script will:
-   - Load the Iris dataset.
-   - Define a Random Forest model.
-   - Set up a search space for hyperparameter optimization.
-   - Perform Bayesian optimization with cross-validation.
-   - Print the best parameters and corresponding cross-validation score.
+### 1. Train and Save the Model
+
+Run the script `save_model.py` to train the model and save it as `model.pkl`:
+
+```bash
+python save_model.py
+```
+
+### 2. Start the Flask API
+
+Run the Flask app:
+
+```bash
+python app.py
+```
+
+The app will start at `http://0.0.0.0:5000`.
+
+### 3. Test the API
+
+You can test the API using a tool like `curl` or Postman.
+
+#### Example Request:
+
+```bash
+curl -X POST http://localhost:5000/predict \
+-H "Content-Type: application/json" \
+-d '{"features": [5.1, 3.5, 1.4, 0.2]}'
+```
+
+#### Example Response:
+
+```json
+{"prediction": 0}
+```
 
 ---
 
-## Output Example
+## Dockerization
 
-After running the script, you will see the best hyperparameters and the best cross-validation score:
+### 1. Build the Docker Image
+
+Create a Docker image using the provided `Dockerfile`:
+
+```bash
+docker build -t flask-ml-app .
+```
+
+### 2. Run the Docker Container
+
+Run the container and map it to port 5000:
+
+```bash
+docker run -d -p 5000:5000 flask-ml-app
+```
+
+### 3. Access the API
+
+The API will be available at `http://localhost:5000/predict`.
+
+---
+
+## Project Structure
 
 ```plaintext
-Best Parameters: {'n_estimators': 150, 'max_depth': 10, 'min_samples_split': 0.05, 'min_samples_leaf': 2, 'max_features': 0.75}
-Best Cross-Validation Score: 0.96
+.
+├── app.py              # Flask app for serving the model
+├── save_model.py       # Script to train and save the ML model
+├── model.pkl           # Saved Random Forest model
+├── Dockerfile          # Docker configuration file
+├── requirements.txt    # Python dependencies
 ```
 
 ---
 
+## How It Works
+
+1. **Model Training**:
+   - The `save_model.py` script trains a Random Forest Classifier on the Iris dataset and saves the model to `model.pkl`.
+
+2. **Flask API**:
+   - The `app.py` script serves the saved model through a Flask API with a single `/predict` endpoint.
+
+3. **Dockerization**:
+   - The `Dockerfile` defines the environment, installs dependencies, and runs the Flask app inside a container.
+
+---
 
 ## Notes
 
-- This example uses the Iris dataset, but the code can be easily adapted to other datasets by replacing the `load_iris()` function with your dataset.
-- Bayesian Optimization efficiently narrows down the search space, making it ideal for hyperparameter tuning compared to grid or random search.
-- The GPU usage is optional for this script but recommended when scaling to larger datasets or more complex models.
+- The `features` input must be a list of 4 numerical values (corresponding to the Iris dataset features).
+- Modify the model or API logic to adapt to different datasets or use cases.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License. You are free to use, modify, and distribute this code.
+This project is licensed under the MIT License. Feel free to use, modify, and distribute this code.

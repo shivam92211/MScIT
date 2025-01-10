@@ -36,7 +36,7 @@ print("Accuracy Score: ", accuracy_score(y_test, y_pred))
 print("Classification Report:\n", classification_report(y_test, y_pred))
 
 # Save the trained model using joblib
-joblib.dump(model, 'p10/trained_model.joblib')
+joblib.dump(model, 'trained_model.joblib')
 
 # Optionally: Visualize feature importance (if the model allows it)
 features = X.columns

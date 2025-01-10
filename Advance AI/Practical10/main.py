@@ -1,74 +1,41 @@
-# Use Colab
+# Use colab with GPU
 
-import pandas as pd
-from sklearn.datasets import fetch_california_housing
-from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
-from sklearn.impute import SimpleImputer
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge
-from sklearn.metrics import mean_squared_error
+import numpy as np
+from sklearn.datasets import load_iris
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+from skopt import BayesSearchCV
+from skopt.space import Real, Integer
 
-# Load California housing dataset
-data = fetch_california_housing(as_frame=True)
-X = data.data
-y = data.target
+# Load dataset
+data = load_iris()
+X, y = data.data, data.target
 
-# Train-test split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Define the model
+model = RandomForestClassifier(random_state=42)
 
-# Define preprocessing for numeric and categorical features
-numeric_features = X.select_dtypes(include=['float64', 'int64']).columns
-categorical_features = []  # Adjust if the dataset has categorical features
+# Define the search space for hyperparameters
+param_space = {
+    'n_estimators': Integer(10, 200),        # Number of trees
+    'max_depth': Integer(1, 20),            # Maximum depth of a tree
+    'min_samples_split': Real(0.01, 0.3),   # Minimum fraction of samples required to split
+    'min_samples_leaf': Integer(1, 10),     # Minimum samples at a leaf node
+    'max_features': Real(0.1, 1.0),         # Fraction of features to consider for split
+}
 
-numeric_transformer = Pipeline(steps=[
-    ('imputer', SimpleImputer(strategy='median')),
-    ('scaler', StandardScaler()),
-    ('poly', PolynomialFeatures(degree=2, include_bias=False))  # Add polynomial features
-])
+# Bayesian Optimization with Cross-Validation
+opt = BayesSearchCV(
+    estimator=model,
+    search_spaces=param_space,
+    n_iter=50,  # Number of parameter settings to try
+    cv=5,       # Number of cross-validation folds
+    n_jobs=-1,  # Use all processors
+    random_state=42
+)
 
-categorical_transformer = Pipeline(steps=[
-    ('imputer', SimpleImputer(strategy='most_frequent')),
-    ('encoder', OneHotEncoder(handle_unknown='ignore'))
-])
+# Perform the optimization
+opt.fit(X, y)
 
-# Combine preprocessors into a single preprocessor
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', numeric_transformer, numeric_features),
-        ('cat', categorical_transformer, categorical_features)
-    ])
-
-# Define the pipeline with two models
-pipeline = Pipeline(steps=[
-    ('preprocessor', preprocessor),
-    ('model', Ridge())  # Placeholder model
-])
-
-# Define parameter grid for model selection
-param_grid = [
-    {
-        'model': [Ridge()],
-        'model__alpha': [0.1, 1.0, 10.0]
-    },
-    {
-        'model': [RandomForestRegressor()],
-        'model__n_estimators': [50, 100],
-        'model__max_depth': [None, 10, 20]
-    }
-]
-
-# Perform grid search
-grid_search = GridSearchCV(pipeline, param_grid, cv=5, scoring='neg_mean_squared_error')
-grid_search.fit(X_train, y_train)
-
-# Evaluate the best model
-best_model = grid_search.best_estimator_
-y_pred = best_model.predict(X_test)
-mse = mean_squared_error(y_test, y_pred)
-
-# Output results
-print("Best Model:", grid_search.best_params_)
-print(f"Test MSE: {mse:.2f}")
+# Results
+print("Best Parameters:", opt.best_params_)
+print("Best Cross-Validation Score:", opt.best_score_)

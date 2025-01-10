@@ -5,7 +5,7 @@ from sklearn.datasets import load_iris
 import pandas as pd
 
 # Load the trained model from the .joblib file
-model = joblib.load('p10/trained_model.joblib')
+model = joblib.load('trained_model.joblib')
 # Define the input data structure using Pydantic
 class FlowerInput(BaseModel):
     sepal_length: float
