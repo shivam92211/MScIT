@@ -1,0 +1,11 @@
+Age	Income	Buys Product
+<=30	High	No
+<=30	Low	Yes
+31-40	High	Yes
+31-40	Low	No
+>40	High	Yes
+>40	Low	Yes
+<=30	High	Yes
+>40	Low	No
+31-40	High	No
+<=30	Low	Yes
