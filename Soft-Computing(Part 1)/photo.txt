@@ -1,0 +1,157 @@
+1
+
+a
+
+b
+
+2
+
+Details
+
+Implement the following:
+
+Design a simple linear neural network model
+
+Calculate the output of neural net using both binary and bipolar sigmoidal function.
+
+Implement the following:
+
+Generate AND/NOT function using MeCulloch- Pitts neural net
+
+Generate XOR function using McCulloch-Pitts neural net.
+
+Implement the Following
+
+Write a program to implement Hebb's rule.
+
+Date
+
+Sign
+
+7/10/23
+
+7/10/23
+
+14/10/23
+
+14/10/23
+
+of
+
+21/10/23
+
+21/10/23
+
+4
+
+Implement the Following
+
+a
+
+Write a program for Back Propagation Algorithm
+
+28/10/23
+
+b
+
+Write a program for error Backpropagation algorithm.
+
+28/10/23
+
+5.
+
+Implement the Following
+
+a
+
+Write a program for Hopfield Network.
+
+4/11/23
+
+b
+
+Write a program ram for Radial Basis function
+
+4/11/23
+
+6.
+
+Implement the Following
+
+a
+
+Kohonen Self organizing map
+
+25/11/23
+
+b
+
+Adaptive resonance theory
+
+25/11/23
+
+7.
+
+Implement the Following
+
+a
+
+Write a program for Linear separation.
+
+9/12/23
+
+b
+
+Write a program for Hopfield network model for associative memory
+
+9/12/23
+
+8.
+
+Implement the Following
+
+a
+
+Membership and Identity Operators | in, not in,
+
+16/12/23
+
+b.
+
+Membership and Identity Operators is, is not
+
+16/12/23
+
+9.
+
+Implement the Following
+
+a
+
+Find ratios using fuzzy logic
+
+23/12/23
+
+b
+
+Solve Tipping problem using fuzzy logic
+
+23/12/23
+
+10.
+
+Implement the Following
+
+a
+
+Implementation of Simple genetic algorithm
+
+6/19/24
+
+b
+
+Create two classes: City and Fitness using Genetic algorithm
+
+6/11/24
+
+1
