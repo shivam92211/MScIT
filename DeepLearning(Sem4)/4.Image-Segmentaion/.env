@@ -1,0 +1,2 @@
+SM_FRAMEWORK=keras
+SM_FRAMEWORK=tf.keras
