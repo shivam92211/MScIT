@@ -166,8 +166,8 @@ if __name__ == "__main__":
     MODEL_SAVE_PATH = "unet_model.pth"
 
     # Directories
-    IMAGES_DIR = "sub_images/"
-    MASKS_DIR = "sub_masks/"
+    IMAGES_DIR = "data/sub_images/"
+    MASKS_DIR = "data/sub_masks/"
 
     # Albumentations Transform (Corrected)
     transform = A.Compose([
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     load_model(loaded_model, MODEL_SAVE_PATH, DEVICE)
 
     # Perform prediction on a new image
-    test_image_path = "my_car.jpg"  # Replace with your test image path
+    test_image_path = "my_car.jpeg"  # Replace with your test image path
     predicted_mask = predict_image(loaded_model, test_image_path, transform, DEVICE)
 
     # Save the predicted mask as an image
