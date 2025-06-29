@@ -1,0 +1,7 @@
+Command to run the 5th project 
+
+First check all requrements are install
+
+```
+ python main.py dog.jpeg
+```
