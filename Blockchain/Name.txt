@@ -1,0 +1,20 @@
+1a - Develop a secure messaging application where users can exchange messages securely using
+     RSA encryption. Implement a mechanism for generating RSA key pairs and
+     encrypting/decrypting messages.
+
+1b - Allow users to create multiple transactions and display them in an organised format.
+
+1c - Create a Python class named Transaction with attributes for sender, receiver, and amount.
+     Implement a method within the class to transfer money from the sender's account to the
+     receiver's account.
+
+1d - Implement a function to add new blocks to the miner and dump the blockchain
+
+2a - Write a python program to demonstrate mining
+
+2b - Demonstrate the use of the Bitcoin Core API to interact with a Bitcoin Core node.
+
+2c - Demonstrating the process of running a blockchain node on your local machine.
+
+2d - Demonstrate mining using geth on your private network.
+     ( Dont take it , just the question paper and take another)

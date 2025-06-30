@@ -1,7 +1,5 @@
 # Write a python program to demonstrate mining
 
-
-
 import hashlib
 
 def mine(block_data, difficulty=4):
